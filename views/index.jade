@@ -1,0 +1,19 @@
+form(action="/" method="POST")
+  input(type="text" value="mail" name="mail")
+  input(type="text" value="name" name="name")
+  input(type="text" value="surname" name="surname")
+  input(type="text" value="phone" name="phone")
+  input(type="text" value="login" name="login")
+  input(type="password" value="pwd" name="pwd")
+  input(type="submit")
+
+each user in users
+  div(style="border: 2px solid black")
+    p= user.mail
+    p= user.name
+    p= user.surname
+    p= user.username
+    p= user.phone
+    p= user.login
+    p= user.pwd
+  
