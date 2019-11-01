@@ -9,22 +9,24 @@ const UserSchema = new mongoose.Schema({
     dob: Date,
     phone: String, 
 });
-UserSchema.methods.comparePwd = function(){
-    if(req.body.pwd === this.model("User")) {
-        console.log('pwd is allright!');
-        return true;
-    }
-    else {
-        console.log('pwf is fucked up!');
-        return false;
-    }
-};
 UserSchema.methods.reversePwd = function(){
     let splitString = this.pwd.split("");
     let reverseArray = splitString.reverse();
     let joinArray = reverseArray.join("");
     return joinArray;
-}
+};
+UserSchema.methods.comparePwd = function(user){
+          // the PROBLEM with the next stroke
+    if(user.pwd.reversePwd() === this.model("User")) {
+        console.log('pwd is allright!');
+        return true;
+    }
+    else {
+        console.log('pwd is fucked up!');
+        return false;
+    }
+};
+
 
 const Model = mongoose.model('User', UserSchema);
 module.exports = Model;

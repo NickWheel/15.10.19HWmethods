@@ -2,29 +2,36 @@ let user = {
   "$schema": "http://json-schema.org/draft-07/schema#",
      "properties":{
      	"mail": {
-            "format": "email"
+            "format": "email",
+            "require": true,
          },
          "name": {
-         	"type": "string",
+            "type": "string",
+            "require": true,
          },
          "surname": {
-         	"type": "string",
+            "type": "string",
+            "require": true,
          },
          "login": {
-           "type": "string",
-           "minLength": 6,
-           "maxLength": 16
+            "type": "string",
+            "require": true,
+            "minLength": 3,
+            "maxLength": 16
          },
          "pwd":{
-         	"type": "string",
+            "type": "string",
+            "require": true,
             "minLength": 6,
             "maxLength": 24,
          },
          "dob":{
-         	"format": "date"
+            "format": "date",
+            "require": true,
          },
          "phone":{
-         	"type": "string",
+            "type": "string",
+            "require": true,
             "length": 10
          },
      }
