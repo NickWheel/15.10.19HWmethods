@@ -13,35 +13,29 @@ router.get('/', function(req, res, next) {
   })
   .catch(err=>{if(err) throw err});
 });
+
 // LOGIN route
 router.post('/login', (req,res)=>{
   const lUser = {
     login: req.body.login,
     pwd: req.body.pwd
   };
-  // looking for a loginning user in DB,
-  // and doing some king of validation
-  UserModel.findOne(lUser)
+  // looking for a loginning user in DB
+  UserModel.findOne({login: lUser.login})
   .then((data)=>{
-   if(data) {
-    if(req.body.login === data.login){
-      // the PROBLEM with the next stroke
-      if(lUser.comparePwd(lUser)) {
-          res.render('index', {title: data.username});
-      } else {
-          res.render('index', {err: 'Login or password is incorrect!'});
-      }
-    } else {
-        res.render('index', {err: 'Login or password is incorrect!'});
+    let result = data.comparePwd(lUser.pwd);
+    if(result) {
+      res.cookie('hash', `${data.pwd.match(/.{1,5}/)}`).cookie('login', `${data.login}`)
+      .end('You are logged in!');
+    }else {
+      res.send('Login or password is incorrect!');
     }
-   }else {
-    res.send('lox');
-   }
   })
   .catch(err=>{if(err) throw err});
   
 });
-// POST route to work with registration
+
+// REGISTRATION route
 router.post('/', (req,res)=>{
   // validation
   const validate = ajv.compile(usersSchema);
@@ -58,19 +52,21 @@ router.post('/', (req,res)=>{
   }
   // if new user passed validation, he will be saved in DB
   else {
-    const new_user = new UserModel({
-      mail: req.body.mail,
-      name: req.body.name,
-      surname: req.body.surname,
-      login: req.body.login,
-      pwd: req.body.pwd,
-      dob: req.body.dob,
-      phone: req.body.phone,
-    });
-    // next stroke is reversing password, to save it in DB lol
-    new_user.pwd = new_user.reversePwd();
-    new_user.save();
-    res.redirect('/');
+    // hashing the pwd 
+     (async function(){
+      const new_user = await new UserModel({
+        mail: req.body.mail,
+        name: req.body.name,
+        surname: req.body.surname,
+        login: req.body.login,
+        dob: req.body.dob,
+        phone: req.body.phone,
+      });
+      let hashedPwd = await new_user.hashingPwd(req.body.pwd);
+      new_user.pwd = hashedPwd;
+      await new_user.save();
+      res.redirect('/');
+    })();
   }
 })
 
